@@ -8,9 +8,10 @@
             "name": "parser",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceRoot}/parser.py",
+            "program": "${workspaceRoot}/parser/parser.py",
             "console": "integratedTerminal",
-            "python": "${workspaceRoot}/.venv/bin/python",
+            "python": "${workspaceRoot}/parser/.venv/bin/python",
+            "cwd": "${workspaceRoot}/parser",
             "justMyCode": true
         }
     ]

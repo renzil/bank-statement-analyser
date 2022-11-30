@@ -1,0 +1,4 @@
+Debit card columns
+
+['Date' 'Narration' 'Chq./Ref.No.' 'Value Dt' 'Withdrawal Amt.'
+ 'Deposit Amt.' 'Closing Balance']
