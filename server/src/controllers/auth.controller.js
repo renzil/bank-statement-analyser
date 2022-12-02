@@ -1,9 +1,31 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
-const { authService, userService, tokenService, emailService } = require('../services');
+const { userService, tokenService } = require('../services');
 
-const register = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
+const User = require('../models/user.model');
+const { OAuth2Client } = require('google-auth-library');
+const config = require('../config/config');
+const googleOauthClient = new OAuth2Client(config.google.oauth_client_id);
+
+const googleOauthCallback = catchAsync(async (req, res) => {
+  const ticket = await googleOauthClient.verifyIdToken({
+      idToken: req.body.credential,
+      audience: config.google.oauth_client_id,
+  });
+  const payload = ticket.getPayload();
+  const googleUserId = payload['sub'];
+  // If request specified a G Suite domain:
+  // const domain = payload['hd'];
+  const user = await User.findOne({googleUserId: googleUserId});
+  if (!user) {
+    const newUser = {
+      googleUserId,
+      name: payload['name'],
+      picture: payload['picture'],
+      email: payload['email'],
+    };
+    user = await userService.createUser(newUser);
+  }  
   const tokens = await tokenService.generateAuthTokens(user);
   res.status(httpStatus.CREATED).send({ user, tokens });
 });
@@ -25,35 +47,9 @@ const refreshTokens = catchAsync(async (req, res) => {
   res.send({ ...tokens });
 });
 
-const forgotPassword = catchAsync(async (req, res) => {
-  const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
-  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
-  res.status(httpStatus.NO_CONTENT).send();
-});
-
-const resetPassword = catchAsync(async (req, res) => {
-  await authService.resetPassword(req.query.token, req.body.password);
-  res.status(httpStatus.NO_CONTENT).send();
-});
-
-const sendVerificationEmail = catchAsync(async (req, res) => {
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
-  await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
-  res.status(httpStatus.NO_CONTENT).send();
-});
-
-const verifyEmail = catchAsync(async (req, res) => {
-  await authService.verifyEmail(req.query.token);
-  res.status(httpStatus.NO_CONTENT).send();
-});
-
 module.exports = {
-  register,
+  googleOauthCallback,
   login,
   logout,
   refreshTokens,
-  forgotPassword,
-  resetPassword,
-  sendVerificationEmail,
-  verifyEmail,
 };

@@ -12,7 +12,22 @@
             "console": "integratedTerminal",
             "python": "${workspaceRoot}/parser/.venv/bin/python",
             "cwd": "${workspaceRoot}/parser",
-            "justMyCode": true
+            "justMyCode": true,
+        },
+        {
+            "name": "server",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceRoot}/server/src/index.js",
+            "console": "integratedTerminal",
+            "cwd": "${workspaceRoot}/server",
+        },
+        {
+            "name": "web-app",
+            "command": "npm run dev -- --open",
+            "request": "launch",
+            "type": "node-terminal",
+            "cwd": "${workspaceRoot}/web-app",
         }
     ]
 }
