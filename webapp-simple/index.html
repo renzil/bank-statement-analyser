@@ -1,0 +1,180 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com" async defer></script>
+</head>
+
+<body>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+
+        /* Events */
+
+        async function onWindowLoad() {
+            doGoogleSignInSetup();
+            await doValidateToken();
+        }
+
+        async function onGoogleSignInCallback(response) {
+            await doGoogleCredentialResponse(response);
+        }
+
+        function onValidateTokenOkay() {
+            console.log("onValidateTokenOkay");
+            doHideLoginButton();
+        }
+
+        function onValidateTokenNotOkay() {
+            console.log("onValidateTokenNotOkay");
+            doShowLoginButton();
+        }
+
+        function onValidateTokenError(e) {
+            console.log("onValidateTokenError");
+            doShowLoginButton();
+        }
+
+        /* Actions */
+
+        async function doValidateToken() {
+            try {
+                const validateResponse = await callApi("/v1/auth/validate-token", {
+                    method: "POST",
+                });
+                if (validateResponse.status === "ok") {
+                    onValidateTokenOkay();
+                } else {
+                    onValidateTokenNotOkay();
+                }
+            } catch (e) {
+                console.log(e);
+                onValidateTokenError(e);
+            }
+        }
+
+        function doGoogleSignInSetup() {
+            google.accounts.id.initialize({
+                client_id: "419266631077-7e3r3k96neg1upb7vv1kjoj5cqqr1ei0.apps.googleusercontent.com",
+                callback: onGoogleSignInCallback,
+            });
+        }
+
+        async function doGoogleCredentialResponse(response) {
+            console.log(response);
+
+            const jwtParts = response.credential.split('.');
+            const jwtPayload = jwtParts[1];
+            console.log(jwtPayload);
+            const jwtPayloadDecoded = b64DecodeUnicode(jwtPayload);
+            console.log(jwtPayloadDecoded);
+            const responsePayload = JSON.parse(jwtPayloadDecoded);
+
+            console.log("ID: " + responsePayload.sub);
+            console.log('Full Name: ' + responsePayload.name);
+            console.log('Given Name: ' + responsePayload.given_name);
+            console.log('Family Name: ' + responsePayload.family_name);
+            console.log("Image URL: " + responsePayload.picture);
+            console.log("Email: " + responsePayload.email);
+            const loginResponse = await callApi("/v1/auth/google-login", {
+                noAuth: true,
+                method: "POST",
+                body: JSON.stringify({ credential: response.credential }),
+            });
+
+            setCredentials(loginResponse);
+        }
+
+        function doShowLoginButton() {
+            google.accounts.id.renderButton(
+                document.getElementById("googleSignInButtonDiv"),
+                {
+                    theme: "outline",
+                    size: "large"
+                }
+            );
+        }
+
+        function doHideLoginButton() {
+
+        }
+
+        /* Utils */
+
+        async function callApi(apiPath, apiOptions = {}) {
+            try {
+                const apiBase = "https://renzil-expert-fiesta-wr77gxrxxxh9jq9-3000.preview.app.github.dev";
+                const fetchOptions = {
+                    headers: {},
+                };
+                if (apiOptions.method === "POST") {
+                    fetchOptions.method = "POST";
+                    fetchOptions.headers["Content-Type"] = "application/json";
+                }
+                if (apiOptions.body) {
+                    fetchOptions.body = apiOptions.body;
+                }
+
+                if (!apiOptions.noAuth) {
+                    let credentials = getCredentials();
+                    let { access, refresh } = credentials.tokens;
+                    if (new Date(access.expires) >= Date.now() && new Date(refresh.expires) < Date.now()) {
+                        await refreshTokens();
+                        credentials = getCredentials();
+                        ({ access, refresh } = credentials.tokens);
+                    }
+                    fetchOptions.headers["Authorization"] = `Bearer ${access.token}`;
+                }
+                return fetch(`${apiBase}${apiPath}`, fetchOptions)
+                    .then(response => response.json());
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        async function refreshTokens() {
+            const credentials = getCredentials();
+            const { refresh } = credentials.tokens;
+
+            const refreshResponse = await callApi("/v1/auth/refresh-tokens", {
+                noAuth: true,
+                method: "POST",
+                body: {
+                    "refreshToken": refresh.token,
+                },
+            });
+
+            setCredentials({
+                user: credentials.user,
+                tokens: refreshResponse.tokens,
+            });
+        }
+
+        function getCredentials() {
+            return JSON.parse(window.localStorage.getItem("credentials") || "{}");
+        }
+
+        function setCredentials(credentials) {
+            window.localStorage.setItem("credentials", JSON.stringify(credentials));
+        }
+
+        function b64DecodeUnicode(str) {
+            str = str.replace(/-/g, '+').replace(/_/g, '/');
+            // Going backwards: from bytestream, to percent-encoding, to original string.
+            return decodeURIComponent(window.atob(str).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+        }
+
+        /* Entrypoint */
+
+        window.onload = onWindowLoad;
+
+    </script>
+
+    <div id="googleSignInButtonDiv" class="w-full h-8">
+    </div>
+</body>
+
+</html>

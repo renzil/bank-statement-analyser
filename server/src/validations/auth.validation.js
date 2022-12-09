@@ -4,11 +4,10 @@ const googleOauthCallback = {
   body: Joi.object().unknown(),
 };
 
-const login = {
+const googleLogin = {
   body: Joi.object().keys({
-    email: Joi.string().required(),
-    password: Joi.string().required(),
-  }),
+      credential: Joi.string().required()
+    }),
 };
 
 const logout = {
@@ -25,7 +24,7 @@ const refreshTokens = {
 
 module.exports = {
   googleOauthCallback,
-  login,
+  googleLogin,
   logout,
   refreshTokens,
 };

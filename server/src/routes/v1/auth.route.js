@@ -6,10 +6,10 @@ const auth = require('../../middlewares/auth');
 
 const router = express.Router();
 
-router.post('/google-oauth-callback', validate(authValidation.googleOauthCallback), authController.googleOauthCallback);
-router.post('/login', validate(authValidation.login), authController.login);
-router.post('/logout', validate(authValidation.logout), authController.logout);
+router.post('/google-login', validate(authValidation.googleLogin), authController.googleLogin);
+router.post('/validate-token', auth(), authController.validateToken);
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
+router.post('/logout', validate(authValidation.logout), authController.logout);
 
 module.exports = router;
 
