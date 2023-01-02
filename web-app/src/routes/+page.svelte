@@ -120,8 +120,9 @@
          };
          
          let [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-         const uploadResponse = await callApi("/v1/import/upload", {
+         const uploadResponse = await callApi("/v1/import/upload-request", {
             method: "POST",
+            body: JSON.stringify({}),
          });
          console.log(uploadResponse);
 

@@ -1,6 +1,6 @@
 export async function callApi(apiPath, apiOptions = {}) {
     try {
-        const apiBase = "https://renzil-zany-journey-9799jw75jgcxqvv-3000.preview.app.github.dev";
+        const apiBase = "https://renzil-obscure-journey-4jgxj447737wwq-3000.preview.app.github.dev";
         const fetchOptions = {
             headers: {},
         };
@@ -15,7 +15,7 @@ export async function callApi(apiPath, apiOptions = {}) {
         if (!apiOptions.noAuth) {
             let credentials = getCredentials();
             let { access, refresh } = credentials.tokens;
-            if (new Date(access.expires) >= Date.now() && new Date(refresh.expires) < Date.now()) {
+            if (Date.now() >= new Date(access.expires) && Date.now() < new Date(refresh.expires)) {
                 await refreshTokens();
                 credentials = getCredentials();
                 ({ access, refresh } = credentials.tokens);
@@ -36,9 +36,9 @@ export async function refreshTokens() {
     const refreshResponse = await callApi("/v1/auth/refresh-tokens", {
         noAuth: true,
         method: "POST",
-        body: {
+        body: JSON.stringify({
             "refreshToken": refresh.token,
-        },
+        }),
     });
 
     setCredentials({

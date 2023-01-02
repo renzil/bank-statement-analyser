@@ -6,8 +6,6 @@ const importController = require('../../controllers/import.controller');
 
 const router = express.Router();
 
-router
-  .route('/uploadRequest')
-  .post(auth('uploadRequest'), validate(importValidation.uploadRequest), importController.uploadRequest)
+router.post('/upload-request', auth('uploadRequest'), validate(importValidation.uploadRequest), importController.uploadRequest)
 
 module.exports = router;

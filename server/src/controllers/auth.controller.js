@@ -24,6 +24,7 @@ const googleLogin = catchAsync(async (req, res) => {
       name: payload['name'],
       picture: payload['picture'],
       email: payload['email'],
+      role: 'user',
     };
     user = await userService.createUser(newUser);
   }

@@ -33,6 +33,18 @@ const userSchema = mongoose.Schema(
         }
       },
     },
+    role: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+      validate(value) {
+        if (!roles.includes(value)) {
+          throw new Error('Invalid role');
+        }
+      },
+    },
   },
   {
     timestamps: true,
