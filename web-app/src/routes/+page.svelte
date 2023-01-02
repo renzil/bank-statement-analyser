@@ -120,15 +120,26 @@
          };
          
          let [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-         const uploadResponse = await callApi("/v1/import/upload-request", {
+         const uploadRequestResponse = await callApi("/v1/import/upload-request", {
             method: "POST",
             body: JSON.stringify({}),
          });
-         console.log(uploadResponse);
+         console.log(uploadRequestResponse);
 
          console.log(fileHandle);
 
+         const fileData = await fileHandle.getFile();
+         console.log(fileData);
 
+         const uploadResponse = await fetch(uploadRequestResponse.url, {
+            method: 'PUT',
+            headers: {
+               'Content-type': fileData.type,
+            },
+            body: fileData,
+         });
+
+         console.log(uploadResponse);
 
       } catch (e) {
          console.log(e);
