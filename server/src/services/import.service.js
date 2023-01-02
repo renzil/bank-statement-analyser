@@ -1,48 +1,47 @@
-/**
- * Upload a file
- * @param {Object} uploadBody
- * @returns {Promise<User>}
- */
-const uploadFile = async (uploadBody) => {
-  /**
- * TODO(developer): Uncomment the following lines before running the sample.
- */
-  // The ID of your GCS bucket
-  const bucketName = 'bank-statement-parser-dev-user-data';
+const BUCKET_NAME = 'bank-statement-parser-dev-user-data';
 
-  // The path to your file to upload
-  const filePath = 'path/to/your/file';
-
-  const destFileName = 'test';
-
+async function generateV4ReadSignedUrl(fileName) {
   // Imports the Google Cloud client library
   const { Storage } = require('@google-cloud/storage');
 
   // Creates a client
-  const storage = new Storage();
+  const storage = new Storage({
+    // projectId: 'bankstatementparser-dev',
+    keyFilename: './bankstatementparser-dev-06dfb339fb0e.credentials.json'
+  });
 
-  async function uploadFile() {
-    const generationMatchPrecondition = 0;
-    const options = {
-      destination: destFileName,
-      // Optional:
-      // Set a generation-match precondition to avoid potential race conditions
-      // and data corruptions. The request to upload is aborted if the object's
-      // generation number does not match your precondition. For a destination
-      // object that does not yet exist, set the ifGenerationMatch precondition to 0
-      // If the destination object already exists in your bucket, set instead a
-      // generation-match precondition using its generation number.
-      preconditionOpts: { ifGenerationMatch: generationMatchPrecondition },
-    };
+  // These options will allow temporary write access to the file
+  const options = {
+      version: 'v4',
+      action: 'write',
+      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+      contentType: 'application/pdf',
+  };
 
-    await storage.bucket(bucketName).upload(filePath, options);
-    console.log(`${filePath} uploaded to ${bucketName}`);
-  }
+  // Get a v4 signed URL for writing the file
+  const [url] = await storage
+      .bucket(BUCKET_NAME)
+      .file(fileName)
+      .getSignedUrl(options);
 
-  uploadFile().catch(console.error);
-  return {};
+  console.log('Generated PUT signed URL:');
+  console.log(url);
+
+  return {
+    url,
+  };
+}
+
+/**
+ * Create a signed url to upload a file
+ * @param {Object} uploadBody
+ * @returns {Promise<User>}
+ */
+const uploadRequest = async (uploadBody) => {
+  const destFileName = 'test';
+  return await generateV4ReadSignedUrl(destFileName)
 };
 
 module.exports = {
-  uploadFile,
+  uploadRequest,
 };

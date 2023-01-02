@@ -1,9 +1,9 @@
 const Joi = require('joi');
 
-const uploadFile = {
+const uploadRequest = {
   body: Joi.object().unknown(),
 };
 
 module.exports = {
-  uploadFile,
+  uploadRequest,
 };

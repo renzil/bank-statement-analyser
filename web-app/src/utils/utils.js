@@ -1,6 +1,6 @@
 export async function callApi(apiPath, apiOptions = {}) {
     try {
-        const apiBase = "https://renzil-expert-fiesta-wr77gxrxxxh9jq9-3000.preview.app.github.dev";
+        const apiBase = "https://renzil-zany-journey-9799jw75jgcxqvv-3000.preview.app.github.dev";
         const fetchOptions = {
             headers: {},
         };
