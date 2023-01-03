@@ -37,8 +37,9 @@ async function generateV4ReadSignedUrl(fileName) {
  * @param {Object} uploadBody
  * @returns {Promise<User>}
  */
-const uploadRequest = async (uploadBody) => {
-  const destFileName = 'test';
+const uploadRequest = async (userId) => {
+  const timestamp = new Date().toISOString();
+  const destFileName = `${userId}_${timestamp}_.pdf`;
   return await generateV4ReadSignedUrl(destFileName)
 };
 
