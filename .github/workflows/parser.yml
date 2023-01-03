@@ -33,4 +33,4 @@ jobs:
         region: 'asia-south1'
         source_dir: 'parser/functions'
         event_trigger_type: providers/cloud.storage/eventTypes/object.change
-        event_trigger_resource: bank-statement-parser-dev-user-data
+        event_trigger_resource: projects/_/buckets/bank-statement-parser-dev-user-data
