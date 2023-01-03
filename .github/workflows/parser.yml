@@ -9,7 +9,7 @@ on:
     - '.github/workflows/parser.yml'
 
 jobs:
-  cloud-fn-deploy:
+  cloud-function-deploy:
     runs-on: 'ubuntu-latest'
     permissions:
       contents: 'read'
