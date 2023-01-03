@@ -4,6 +4,9 @@ on:
   push:
     branches:
     - 'main'
+    paths:
+    - 'parser/functions/**'
+    - '.github/workflows/parser.yml'
 
 jobs:
   deploy-cloud-function:
