@@ -25,4 +25,7 @@ jobs:
       uses: 'google-github-actions/deploy-cloud-functions@v1'
       with:
         name: 'bank-statement-parser'
-        runtime: 'nodejs16'
+        runtime: 'python310'
+        entry_point: 'process_bank_statement_pdf'
+        region: 'asia-south1'
+        source_dir: 'parser/functions'
