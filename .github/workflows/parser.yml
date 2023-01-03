@@ -32,5 +32,5 @@ jobs:
         entry_point: 'process_bank_statement_pdf'
         region: 'asia-south1'
         source_dir: 'parser/functions'
-        event_trigger_type: providers/cloud.storage/eventTypes/object.finalize
-        event_trigger_resource: projects/_/buckets/bank-statement-parser-dev-user-data
+        event_trigger_type: 'providers/cloud.storage/eventTypes/object.finalize'
+        event_trigger_resource: 'projects/_/buckets/bank-statement-parser-dev-user-data'
