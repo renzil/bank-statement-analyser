@@ -1,23 +1,41 @@
 import functions_framework
+from google.cloud import storage
 
 @functions_framework.http
-def process_bank_statement_pdf(request):
-   """HTTP Cloud Function.
-   Args:
-       request (flask.Request): The request object.
-       <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
-   Returns:
-       The response text, or any set of values that can be turned into a
-       Response object using `make_response`
-       <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
-   """
-   request_json = request.get_json(silent=True)
-   request_args = request.args
+def process_bank_statement_pdf(event, context):
+    """Background Cloud Function to be triggered by Cloud Storage.
+       This generic function logs relevant data when a file is changed,
+       and works for all Cloud Storage CRUD operations.
+    Args:
+        event (dict):  The dictionary with data specific to this type of event.
+                       The `data` field contains a description of the event in
+                       the Cloud Storage `object` format described here:
+                       https://cloud.google.com/storage/docs/json_api/v1/objects#resource
+        context (google.cloud.functions.Context): Metadata of triggering event.
+    Returns:
+        None; the output is written to Cloud Logging
+    """
 
-   if request_json and 'name' in request_json:
-       name = request_json['name']
-   elif request_args and 'name' in request_args:
-       name = request_args['name']
-   else:
-       name = 'World'
-   return 'Hello {}!'.format(name)
+    print('Event ID: {}'.format(context.event_id))
+    print('Event type: {}'.format(context.event_type))
+    print('Bucket: {}'.format(event['bucket']))
+    print('File: {}'.format(event['name']))
+    print('Metageneration: {}'.format(event['metageneration']))
+    print('Created: {}'.format(event['timeCreated']))
+    print('Updated: {}'.format(event['updated']))
+
+    bucket_name = event['bucket']
+    source_blob_name = event['name']
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+
+    destination_file_name = '/tmp/doc_to_process.pdf'
+
+    # Construct a client side representation of a blob.
+    # Note `Bucket.blob` differs from `Bucket.get_blob` as it doesn't retrieve
+    # any content from Google Cloud Storage. As we don't need additional data,
+    # using `Bucket.blob` is preferred here.
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
