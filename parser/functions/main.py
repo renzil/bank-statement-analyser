@@ -38,3 +38,20 @@ def process_bank_statement_pdf(event, context):
     blob = bucket.blob(source_blob_name)
     blob.download_to_filename(destination_file_name)
 
+    user_data = source_blob_name.split("_")
+    user_id = user_data[0]
+    timestamp = user_data[1]
+
+    print('User id: {}'.format(user_id))
+    print('Timestamp: {}'.format(timestamp))
+
+    from pymongo import MongoClient
+    import os
+    client = MongoClient(f"mongodb+srv://admin:{os.environ['MONGODB_PWD']}>@cluster0.xclm49x.mongodb.net/?retryWrites=true&w=majority")
+    db = client.test
+
+    imports_collection = db["imports"]
+    imports_collection.insert_one({
+        "user_id": user_id,
+        "timestamp": timestamp
+    })
