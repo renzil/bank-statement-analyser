@@ -34,4 +34,4 @@ jobs:
         source_dir: 'parser/functions'
         event_trigger_type: providers/cloud.storage/eventTypes/object.change
         event_trigger_resource: projects/_/buckets/bank-statement-parser-dev-user-data
-        secret_environment_variables: 'MONGODB_PWD=projects/419266631077/secrets/mongodb-atlas-db-pwd/versions/1'
+        secret_environment_variables: 'MONGODB_PWD=projects/419266631077/secrets/mongodb-atlas-db-pwd/versions/latest'
