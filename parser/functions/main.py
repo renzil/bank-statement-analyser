@@ -47,7 +47,7 @@ def process_bank_statement_pdf(event, context):
 
     from pymongo import MongoClient
     import os
-    client = MongoClient(f"mongodb+srv://admin:{os.environ['MONGODB_PWD']}>@cluster0.xclm49x.mongodb.net/?retryWrites=true&w=majority")
+    client = MongoClient(f"mongodb+srv://admin:{os.environ['MONGODB_PWD']}@cluster0.xclm49x.mongodb.net/?retryWrites=true&w=majority")
     db = client.test
 
     imports_collection = db["imports"]
