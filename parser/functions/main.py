@@ -1,7 +1,6 @@
 import functions_framework
 from google.cloud import storage
 
-@functions_framework.http
 def process_bank_statement_pdf(event, context):
     """Background Cloud Function to be triggered by Cloud Storage.
        This generic function logs relevant data when a file is changed,
