@@ -29,7 +29,7 @@ jobs:
       with:
         name: 'bank-statement-parser'
         runtime: 'python310'
-        entry_point: 'process_bank_statement_pdf'
+        entry_point: 'on_pdf_uploaded'
         region: 'asia-south1'
         source_dir: 'parser/functions'
         event_trigger_type: providers/cloud.storage/eventTypes/object.change
