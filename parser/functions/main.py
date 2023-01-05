@@ -15,6 +15,8 @@ def on_pdf_uploaded(event, context):
         None; the output is written to Cloud Logging
     """
 
+    print('Event: {}'.format(event))
+    print('Context: {}'.format(context))
     print('Event ID: {}'.format(context.event_id))
     print('Event type: {}'.format(context.event_type))
     print('Bucket: {}'.format(event['bucket']))
@@ -108,7 +110,7 @@ class TransactionWithRewards(NamedTuple):
     amount: float
     transaction_type: str
     rewards: float
-    
+
 def get_credit_infos(res: list[DataFrame]) -> List[Transaction]:
     return list(yield_credit_infos(res))
 
