@@ -28,10 +28,7 @@ jobs:
       uses: 'google-github-actions/deploy-cloud-functions@v1'
       with:
         name: 'bank-statement-parser'
-        runtime: 'python310'
-        entry_point: 'on_pdf_uploaded'
+        runtime: 'python311'
+        entry_point: 'parse_bank_statement'
         region: 'asia-south1'
         source_dir: 'parser/functions'
-        event_trigger_type: providers/cloud.storage/eventTypes/object.change
-        event_trigger_resource: projects/_/buckets/bank-statement-parser-dev-user-data
-        secret_environment_variables: 'MONGODB_PWD=projects/419266631077/secrets/mongodb-atlas-db-pwd/versions/latest'
